@@ -1,56 +1,375 @@
-body {
-    font-family: sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 30px;
-    background: #111;
-    color: white;
+* {
+    box-sizing: border-box;
 }
+
+:root {
+    --background: #090b10;
+    --panel: #11151d;
+    --panel-light: #181e28;
+    --border: #283140;
+    --text: #f2f5f8;
+    --muted: #8c96a5;
+    --accent: #63d8ff;
+    --accent-dark: #256b82;
+    --cell-dead: #10151c;
+    --cell-alive: #63d8ff;
+    --grid-line: #252d38;
+}
+
+body {
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    margin: 0;
+    min-height: 100vh;
+    padding: 32px 16px 48px;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            #17212e 0%,
+            var(--background) 45%
+        );
+
+    color: var(--text);
+}
+
+
+/* =========================
+   タイトル
+   ========================= */
 
 h1 {
-    margin-bottom: 20px;
+    margin: 0;
+    text-align: center;
+
+    font-size: clamp(32px, 7vw, 52px);
+    font-weight: 800;
+    letter-spacing: -1px;
+
+    color: var(--text);
 }
+
+h1::after {
+    content: "CONWAY'S GAME OF LIFE";
+
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+
+    color: var(--muted);
+}
+
+
+/* =========================
+   操作パネル
+   ========================= */
 
 .controls {
+    width: min(760px, 100%);
+    margin: 28px auto 0;
+    padding: 22px;
+
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    align-items: center;
+    gap: 16px;
+
+    background: rgba(17, 21, 29, 0.92);
+
+    border: 1px solid var(--border);
+    border-radius: 18px;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-input {
-    font-size: 16px;
-    padding: 6px;
+
+/* =========================
+   入力欄
+   ========================= */
+
+.controls > div:first-child,
+.controls > div:nth-child(2) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
 }
+
+label {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+input[type="number"] {
+    width: 100px;
+
+    padding: 9px 11px;
+
+    color: var(--text);
+    background: var(--panel-light);
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+
+input[type="number"]:focus {
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 3px rgba(99, 216, 255, 0.12);
+}
+
+
+/* =========================
+   ボタン
+   ========================= */
 
 button {
-    font-size: 16px;
-    padding: 8px 14px;
+    min-height: 44px;
+
+    padding: 9px 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    background: var(--panel-light);
+    color: var(--text);
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        border-color 0.15s,
+        transform 0.1s;
+}
+
+button:hover {
+    background: #202834;
+    border-color: #3b4758;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+
+/* マス数適用 */
+
+#applySize {
+    width: 100%;
+
+    background: var(--accent);
+    color: #061016;
+
+    border-color: var(--accent);
+}
+
+#applySize:hover {
+    background: #82e2ff;
+    border-color: #82e2ff;
+}
+
+
+/* =========================
+   操作ボタン
+   ========================= */
+
+.buttons {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 9px;
+
+    padding-top: 4px;
+}
+
+#start {
+    background: var(--accent);
+    color: #061016;
+    border-color: var(--accent);
+}
+
+#start:hover {
+    background: #82e2ff;
+}
+
+#stop {
+    background: #202630;
+}
+
+#step,
+#rewind,
+#reset {
+    color: #cbd2dc;
+}
+
+
+/* =========================
+   速度
+   ========================= */
+
+.controls > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding-top: 4px;
+}
+
+input[type="range"] {
+    flex: 1;
+
+    min-width: 0;
+
+    accent-color: var(--accent);
+
     cursor: pointer;
 }
 
-.buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+
+/* =========================
+   世代表示
+   ========================= */
+
+body > p {
+    width: min(760px, 100%);
+
+    margin: 18px auto 12px;
+
+    padding: 12px 16px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+    font-weight: 600;
 }
 
-#grid {
-    display: grid;
-    margin: 25px auto;
-    width: fit-content;
-    border: 1px solid #555;
+#generation {
+    margin-left: 6px;
+
+    color: var(--accent);
+
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
 }
+
+
+/* =========================
+   ライフゲーム盤
+   ========================= */
+
+#grid {
+    max-width: 100%;
+
+    margin: 16px auto;
+
+    overflow: auto;
+
+    padding: 12px;
+
+    background: #070a0e;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+
+/* =========================
+   セル
+   ========================= */
 
 .cell {
     width: 20px;
     height: 20px;
+
     box-sizing: border-box;
-    border: 1px solid #333;
-    background: #222;
+
+    border: 1px solid var(--grid-line);
+
+    background: var(--cell-dead);
+
+    cursor: pointer;
+
+    transition:
+        background 0.08s,
+        border-color 0.08s;
+}
+
+.cell:hover {
+    border-color: #536174;
 }
 
 .cell.alive {
-    background: #fff;
+    background: var(--cell-alive);
+
+    border-color: var(--cell-alive);
+
+    box-shadow:
+        inset 0 0 5px rgba(255, 255, 255, 0.25);
+}
+
+
+/* =========================
+   スマホ・タブレット対応
+   ========================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 24px 10px 36px;
+    }
+
+    .controls {
+        padding: 16px;
+
+        border-radius: 14px;
+    }
+
+    .buttons {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    button {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    #grid {
+        padding: 8px;
+        border-radius: 10px;
+    }
 }
